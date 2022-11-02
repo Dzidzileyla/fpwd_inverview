@@ -45,8 +45,14 @@ const makeQuestionRepository = (fileName) => {
 
   const addAnswer = async (questionId, answer) => {
     const questions = await getQuestions();
-    const question = questions.find((q) => q.id === questionId); 
+    const question = questions.find((q) => q.id === questionId);
+
+    if (!question) {
+      return null;
+    }
+
     question.answers.push(answer);
+
     await writeFile(fileName, JSON.stringify(questions));
 
     return answer;

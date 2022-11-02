@@ -1,6 +1,6 @@
 const { writeFile, rm } = require("fs/promises");
 const { faker } = require("@faker-js/faker");
-const { makeQuestionRepository } = require("./question");
+const { makeQuestionRepository } = require("../../repositories/question");
 
 describe("question repository", () => {
   const TEST_QUESTIONS_FILE_PATH = "test-questions.json";

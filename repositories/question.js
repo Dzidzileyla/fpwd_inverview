@@ -21,8 +21,6 @@ const makeQuestionRepository = (fileName) => {
 
     await writeFile(fileName, JSON.stringify(questions));
 
-    console.log(questions);
-
     return question;
   };
 
@@ -46,9 +44,9 @@ const makeQuestionRepository = (fileName) => {
   };
 
   const addAnswer = async (questionId, answer) => {
-    const question = await getQuestionById(questionId);
+    const questions = await getQuestions();
+    const question = questions.find((q) => q.id === questionId); 
     question.answers.push(answer);
-
     await writeFile(fileName, JSON.stringify(questions));
 
     return answer;

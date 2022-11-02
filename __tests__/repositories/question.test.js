@@ -42,11 +42,11 @@ describe("question repository", () => {
   });
 
   test("Should return a question for specific id", async () => {
-    const uuid = faker.datatype.uuid();
+    const questionId = faker.datatype.uuid();
 
     const testQuestions = [
       {
-        id: uuid,
+        id: questionId,
         summary: "What is my name?",
         author: "Jack London",
         answers: [],
@@ -61,9 +61,9 @@ describe("question repository", () => {
 
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
 
-    const question = await questionRepo.getQuestionById(uuid);
+    const question = await questionRepo.getQuestionById(questionId);
 
-    expect(question.id).toBe(uuid);
+    expect(question.id).toBe(questionId);
     expect(question.summary).toBe("What is my name?");
     expect(question.author).toBe("Jack London");
     expect(question.answers).toHaveLength(0);
@@ -87,8 +87,8 @@ describe("question repository", () => {
 
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
 
-    const uuid = faker.datatype.uuid();
-    expect(await questionRepo.getQuestionById(uuid)).toBeUndefined();
+    const questionId = faker.datatype.uuid();
+    expect(await questionRepo.getQuestionById(questionId)).toBeUndefined();
   });
 
   test("Should add new question to database", async () => {
@@ -124,13 +124,20 @@ describe("question repository", () => {
 
   test("Should return answers for specific question", async () => {
     const questionId = faker.datatype.uuid();
+    const answerId = faker.datatype.uuid();
 
     const testQuestions = [
       {
         id: questionId,
         summary: "What is my name?",
         author: "Jack London",
-        answers: ['Aluminum hat rocks!'],
+        answers: [
+          {
+            id: answerId,
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
       },
       {
         id: faker.datatype.uuid(),
@@ -144,6 +151,11 @@ describe("question repository", () => {
 
     const answers = await questionRepo.getAnswers(questionId);
     expect(answers).toHaveLength(1);
+
+    const answer = answers[0];
+    expect(answer.id).toBe(answerId);
+    expect(answer.author).toBe("Mateusz Kopko");
+    expect(answer.summary).toBe("Aluminum Foil hat rocks!");
   });
 
   test("Should return an empty array of answers for non existing question", async () => {
@@ -154,7 +166,13 @@ describe("question repository", () => {
         id: faker.datatype.uuid(),
         summary: "What is my name?",
         author: "Jack London",
-        answers: ['Aluminum hat rocks!'],
+        answers: [
+          {
+            id: faker.datatype.uuid(),
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
       },
       {
         id: faker.datatype.uuid(),
@@ -168,5 +186,138 @@ describe("question repository", () => {
 
     const answers = await questionRepo.getAnswers(questionId);
     expect(answers).toHaveLength(0);
+  });
+
+  test("Should return answer while searching by question id and answer id", async () => {
+    const questionId = faker.datatype.uuid();
+    const answerId = faker.datatype.uuid();
+
+    const testQuestions = [
+      {
+        id: questionId,
+        summary: "What is my name?",
+        author: "Jack London",
+        answers: [
+          {
+            id: answerId,
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
+      },
+      {
+        id: faker.datatype.uuid(),
+        summary: "Who are you?",
+        author: "Tim Doods",
+        answers: [],
+      },
+    ];
+
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
+
+    const answer = await questionRepo.getAnswer(questionId, answerId);
+    expect(answer.id).toBe(answerId);
+    expect(answer.author).toBe("Mateusz Kopko");
+    expect(answer.summary).toBe("Aluminum Foil hat rocks!");
+  });
+
+  test("Should return nothing while searching by non exiting question and with existing answer", async () => {
+    const questionId = faker.datatype.uuid();
+    const answerId = faker.datatype.uuid();
+
+    const testQuestions = [
+      {
+        id: faker.datatype.uuid(),
+        summary: "What is my name?",
+        author: "Jack London",
+        answers: [
+          {
+            id: answerId,
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
+      },
+      {
+        id: faker.datatype.uuid(),
+        summary: "Who are you?",
+        author: "Tim Doods",
+        answers: [],
+      },
+    ];
+
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
+
+    const answer = await questionRepo.getAnswer(questionId, answerId);
+    expect(answer).toBeUndefined();
+  });
+
+  test("Should return nothing while searching by exiting question and with non existing answer", async () => {
+    const questionId = faker.datatype.uuid();
+    const answerId = faker.datatype.uuid();
+
+    const testQuestions = [
+      {
+        id: questionId,
+        summary: "What is my name?",
+        author: "Jack London",
+        answers: [
+          {
+            id: faker.datatype.uuid(),
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
+      },
+      {
+        id: faker.datatype.uuid(),
+        summary: "Who are you?",
+        author: "Tim Doods",
+        answers: [],
+      },
+    ];
+
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
+
+    const answer = await questionRepo.getAnswer(questionId, answerId);
+    expect(answer).toBeUndefined();
+  });
+
+  test("Should add answer to question", async () => {
+    const questionId = faker.datatype.uuid();
+
+    const testQuestions = [
+      {
+        id: questionId,
+        summary: "What is my name?",
+        author: "Jack London",
+        answers: [
+          {
+            id: faker.datatype.uuid(),
+            author: "Mateusz Kopko",
+            summary: "Aluminum Foil hat rocks!",
+          },
+        ],
+      },
+      {
+        id: faker.datatype.uuid(),
+        summary: "Who are you?",
+        author: "Tim Doods",
+        answers: [],
+      },
+    ];
+
+    const newAnswer = {
+      id: faker.datatype.uuid(),
+      author: "Alex Jones",
+      summary: "Reptilians are real!",
+    };
+
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions));
+
+    await questionRepo.addAnswer(questionId, newAnswer);
+
+    const answers = await questionRepo.getAnswers(questionId);
+    expect(answers).toHaveLength(2);
   });
 });

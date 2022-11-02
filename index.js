@@ -33,3 +33,5 @@ app.get("/questions/:questionId/answers/:answerId", (req, res) => {});
 app.listen(PORT, () => {
   console.log(`Responder app listening on port ${PORT}`);
 });
+
+module.exports = app;

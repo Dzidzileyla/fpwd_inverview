@@ -8,10 +8,29 @@ const makeQuestionRepository = (fileName) => {
     return questions;
   };
 
-  const getQuestionById = async (questionId) => {};
+  const getQuestionById = async (questionId) => {
+    const questions = await getQuestions();
+    const question = questions.find((q) => q.id === questionId);
+
+    return question;
+  };
+
   const addQuestion = async (question) => {};
-  const getAnswers = async (questionId) => {};
-  const getAnswer = async (questionId, answerId) => {};
+
+  const getAnswers = async (questionId) => {
+    const question = await getQuestionById(questionId);
+    const { answers } = question;
+
+    return answers;
+  };
+
+  const getAnswer = async (questionId, answerId) => {
+    const answers = await getAnswers(questionId);
+    const answer = answers.find((a) => a.id === answerId);
+
+    return answer;
+  };
+
   const addAnswer = async (questionId, answer) => {};
 
   return {

@@ -3,12 +3,12 @@ const app = require("../../index");
 const { faker } = require("@faker-js/faker");
 
 describe("question controller", () => {
-  test("Should return questions", async () => {
+  test("GET /questions - Should return questions", async () => {
     const response = await request(app).get("/questions");
     expect(response.statusCode).toBe(200);
   });
 
-  test("Should return question", async () => {
+  test("/questions/:questionId - Should return question", async () => {
     const questionId = "50f9e662-fa0e-4ec7-b53b-7845e8f821c3";
     const response = await request(app).get(`/questions/${questionId}`);
 
@@ -16,7 +16,7 @@ describe("question controller", () => {
     expect(response.body).toHaveProperty("id", questionId);
   });
 
-  test("Should not return question when providing non existing question id", async () => {
+  test("/questions/:questionId - Should not return question when providing non existing question id", async () => {
     const questionId = "50f9e662-fa0e-4ec7-b53b-7845e8f821c4";
     const response = await request(app).get(`/questions/${questionId}`);
 
@@ -24,7 +24,7 @@ describe("question controller", () => {
     expect(response.body).toHaveProperty("message", "Question not found");
   });
 
-  test("Should create new question", async () => {
+  test("POST /questions - Should create new question", async () => {
     const sampleQuestion = {
       id: faker.datatype.uuid(),
       author: faker.name.fullName(),
@@ -36,14 +36,14 @@ describe("question controller", () => {
     expect(response.statusCode).toBe(201);
   });
 
-  test("Should return answers for specific question", async () => {
+  test("GET /questions/:questionId/answers - Should return answers for specific question", async () => {
     const questionId = "50f9e662-fa0e-4ec7-b53b-7845e8f821c3";
 
     const response = await request(app).get(`/questions/${questionId}/answers`);
     expect(response.statusCode).toBe(200);
   });
 
-  test("Should not return answers for not existing question", async () => {
+  test("GET /questions/:questionId/answers - Should not return answers for not existing question", async () => {
     const questionId = faker.datatype.uuid();
 
     const response = await request(app).get(`/questions/${questionId}/answers`);
@@ -51,7 +51,7 @@ describe("question controller", () => {
     expect(response.body).toHaveProperty("message", "Question not found");
   });
 
-  test("Should create answer for specific question", async () => {
+  test("POST /questions/:questionId/answers - Should create answer for specific question", async () => {
     const questionId = "50f9e662-fa0e-4ec7-b53b-7845e8f821c3";
 
     const answer = {
@@ -67,7 +67,7 @@ describe("question controller", () => {
     expect(response.statusCode).toBe(201);
   });
 
-  test("Should not create answer for non existing question", async () => {
+  test("POST /questions/:questionId/answers - Should not create answer for non existing question", async () => {
     const questionId = faker.datatype.uuid();
 
     const answer = {
@@ -84,7 +84,7 @@ describe("question controller", () => {
     expect(response.body).toHaveProperty("message", "Question not found");
   });
 
-  test("Should return answer for specific question id and answer id", async () => {
+  test("GET /questions/:questionId/answers/:answerId - Should returns answer for specific question id and answer id", async () => {
     const questionId = "50f9e662-fa0e-4ec7-b53b-7845e8f821c3";
     const answerId = "ce7bddfb-0544-4b14-92d8-188b03c41ee4";
 

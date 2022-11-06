@@ -1,6 +1,7 @@
 const express = require("express");
 const { urlencoded, json } = require("body-parser");
 const makeRepositories = require("./middleware/repositories");
+const { isEmpty } = require("./util/util");
 
 const STORAGE_FILE_PATH = "questions.json";
 const PORT = 3000;
@@ -36,7 +37,7 @@ app.get("/questions/:questionId", async (req, res) => {
 app.post("/questions", async (req, res) => {
   const { body } = req;
 
-  if (Object.keys(body).length === 0) {
+  if (isEmpty(body)) {
     res.status(400).json({ message: "Question is required" });
   } else {
     const question = await req.repositories.questionRepo.addQuestion(body);
